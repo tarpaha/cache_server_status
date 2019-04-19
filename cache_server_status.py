@@ -2,11 +2,6 @@
 import socket, sys, logging
 from argparse import ArgumentParser
 
-cache_server_port = 8126
-cache_server_version = 254
-verbose = True
-
-
 def check_server_status(address, port, version):
     s = socket.socket()
     try:
@@ -36,27 +31,30 @@ def check_server_status(address, port, version):
     return (True, None)
 
 
-def parse_args():
+def parse_args(default_port, default_version):
     parser = ArgumentParser(description='Check Unity cache server status')
     parser.add_argument('address', help='cache server address (IP or URL)')
     parser.add_argument('-p', '--port', dest='port', type=int,
-        default=cache_server_port,
-        help='cache server port, default is ' + str(cache_server_port))
+        default=default_port,
+        help='cache server port, default is ' + str(default_port))
     parser.add_argument('-v', '--version', dest='version', type=int,
-        default=cache_server_version,
-        help='cache server version, default is ' + str(cache_server_version))
+        default=default_version,
+        help='cache server version, default is ' + str(default_version))
     parser.add_argument('-q', '--quiet', dest='verbose', action='store_false', default=True, help='be quiet')
     args = parser.parse_args()
     return (args.address, args.port, args.version, args.verbose)
 
 
+default_port = 8126
+default_version = 254
+verbose = True
+
 def vprint(text):
     if verbose:
-        print(  text)
-
+        print(text)
 
 if __name__== '__main__' :
-    (address, port, version, verbose) = parse_args()
+    (address, port, version, verbose) = parse_args(default_port, default_version)
     (active, error) = check_server_status(address, port, version)
     if not active:
         if verbose:
