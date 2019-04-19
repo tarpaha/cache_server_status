@@ -33,17 +33,19 @@ def check_server_status(address, port, version):
 
 def parse_args(default_port, default_version):
     parser = ArgumentParser(description='Check Unity cache server status')
-    parser.add_argument('address', help='cache server address (IP or URL)')
-    parser.add_argument('-p', '--port', dest='port', type=int,
-        default=default_port,
-        help='cache server port, default is ' + str(default_port))
+    parser.add_argument('url',
+        help='cache server address, can contain port, default port is {}'.format(default_port))
     parser.add_argument('-v', '--version', dest='version', type=int,
         default=default_version,
         help='cache server version, default is ' + str(default_version))
     parser.add_argument('-q', '--quiet', dest='verbose', action='store_false', default=True, help='be quiet')
     args = parser.parse_args()
-    return (args.address, args.port, args.version, args.verbose)
+    (address, port) = split_url(args.url)
+    return (address, int(port) if port != None else default_port , args.version, args.verbose)
 
+def split_url(url):
+    values = url.split(':')
+    return (url, None) if len(values) < 2 else (values[0], values[1])
 
 default_port = 8126
 default_version = 254
